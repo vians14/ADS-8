@@ -48,14 +48,14 @@ void printFreq(BST<std::string>& tree) {
     tree.getAllNodes(nodes);
     
     std::sort(nodes.begin(), nodes.end(),
-        [](const auto& a, const auto& b) {
+        [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
             if (a.second != b.second) return a.second > b.second;
             return a.first < b.first;
         });
     
     std::ofstream out("result/freq.txt");
     for (const auto& p : nodes) {
-        out << p.first << " " << p.second << "\n";
+        out << p.first << " " << p.second << std::endl;
     }
     out.close();
 }
