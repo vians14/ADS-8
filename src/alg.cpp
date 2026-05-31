@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -54,7 +53,7 @@ void printFreq(BST<std::string>& tree) {
 
   std::ofstream out("result/freq.txt");
   for (const auto& p : pv.data) {
-    out << p.first << " " << p.second << std::endl;
+    out << p.first << " " << p.second << "\n";
   }
   out.close();
 }
