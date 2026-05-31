@@ -4,39 +4,37 @@
 
 #include <fstream>
 #include <iostream>
-#include <cctype>
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
     if (!file) return;
     
+    std::map<std::string, int> freq;
     std::string word;
     char c;
     
     while (file.get(c)) {
-        // только латинские буквы A-Z a-z
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            // приводим к нижнему регистру
-            if (c >= 'A' && c <= 'Z') {
-                c = c + ('a' - 'A');
-            }
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+            if (c >= 'A' && c <= 'Z') c = c - 'A' + 'a';
             word += c;
-        } else {
-            if (!word.empty()) {
-                tree.insert(word);
-                word.clear();
-            }
+        } else if (!word.empty()) {
+            freq[word]++;
+            word.clear();
         }
     }
-    
-    if (!word.empty()) {
-        tree.insert(word);
-    }
+    if (!word.empty()) freq[word]++;
     
     file.close();
+    
+    for (auto& p : freq) {
+        for (int i = 0; i < p.second; i++) {
+            tree.insert(p.first);
+        }
+    }
 }
 
 void printFreq(BST<std::string>& tree) {
@@ -44,7 +42,7 @@ void printFreq(BST<std::string>& tree) {
     tree.getAllNodes(nodes);
     
     std::sort(nodes.begin(), nodes.end(),
-        [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
+        [](const auto& a, const auto& b) {
             if (a.second != b.second) return a.second > b.second;
             return a.first < b.first;
         });
@@ -52,7 +50,6 @@ void printFreq(BST<std::string>& tree) {
     std::ofstream out("result/freq.txt");
     for (const auto& p : nodes) {
         out << p.first << " " << p.second << "\n";
-        std::cout << p.first << " " << p.second << "\n";
     }
     out.close();
 }
