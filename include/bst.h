@@ -109,5 +109,5 @@ public:
     }
 };
 
-#endif // BST_H
+
 #endif  // INCLUDE_BST_H_
