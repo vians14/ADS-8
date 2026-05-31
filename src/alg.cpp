@@ -13,28 +13,34 @@ void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
     if (!file) return;
     
-    std::map<std::string, int> freq;
     std::string word;
     char c;
     
     while (file.get(c)) {
         if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-            if (c >= 'A' && c <= 'Z') c = c - 'A' + 'a';
+            if (c >= 'A' && c <= 'Z') c = c + 32;
             word += c;
         } else if (!word.empty()) {
-            freq[word]++;
+            while (!word.empty() && !((word.back() >= 'a' && word.back() <= 'z'))) {
+                word.pop_back();
+            }
+            if (!word.empty()) {
+                tree.insert(word);
+            }
             word.clear();
         }
     }
-    if (!word.empty()) freq[word]++;
     
-    file.close();
-    
-    for (auto& p : freq) {
-        for (int i = 0; i < p.second; i++) {
-            tree.insert(p.first);
+    if (!word.empty()) {
+        while (!word.empty() && !((word.back() >= 'a' && word.back() <= 'z'))) {
+            word.pop_back();
+        }
+        if (!word.empty()) {
+            tree.insert(word);
         }
     }
+    
+    file.close();
 }
 
 void printFreq(BST<std::string>& tree) {
