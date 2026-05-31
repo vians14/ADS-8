@@ -8,26 +8,24 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <set>
-#include <sstream>
 
 void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
     
     if (!file.is_open()) {
-        std::cerr << "Error: cannot open " << filename << std::endl;
+        std::cerr << "Error: cannot open file" << std::endl;
         return;
     }
     
     std::string word;
-    char ch;
+    char c;
     
-    while (file.get(ch)) {
-        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-            if (ch >= 'A' && ch <= 'Z') {
-                ch = ch + 32;
+    while (file.get(c)) {
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+            if (c >= 'A' && c <= 'Z') {
+                c = c + 32;
             }
-            word += ch;
+            word.push_back(c);
         } else {
             if (word.length() > 0) {
                 tree.insert(word);
@@ -47,7 +45,7 @@ void printFreq(BST<std::string>& tree) {
     std::vector<std::pair<std::string, int>> nodes;
     tree.getAllNodes(nodes);
     
-    std::sort(nodes.begin(), nodes.end(), 
+    std::sort(nodes.begin(), nodes.end(),
         [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
             if (a.second != b.second) {
                 return a.second > b.second;
@@ -59,7 +57,6 @@ void printFreq(BST<std::string>& tree) {
     
     for (const auto& node : nodes) {
         outFile << node.first << " " << node.second << std::endl;
-        std::cout << node.first << " " << node.second << std::endl;
     }
     
     outFile.close();
