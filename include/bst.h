@@ -71,4 +71,4 @@ class BST {
   Node* getRoot() const { return root; }
 };
 
-#endif  // BST_H
+#endif  // INCLUDE_BST_H_
