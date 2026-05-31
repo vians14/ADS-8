@@ -16,90 +16,73 @@ private:
         int count;
         Node* left;
         Node* right;
-        
-        Node(const T& value) : data(value), count(1), left(nullptr), right(nullptr) {}
+        Node(const T& val) : data(val), count(1), left(nullptr), right(nullptr) {}
     };
     
     Node* root;
     
-    Node* insert(Node* node, const T& value) {
+    void insert(Node*& node, const T& value) {
         if (node == nullptr) {
-            return new Node(value);
+            node = new Node(value);
+            return;
         }
         
-        if (value < node->data) {
-            node->left = insert(node->left, value);
-        } 
-        else if (value > node->data) {
-            node->right = insert(node->right, value);
-        } 
-        else {
+        if (value == node->data) {
             node->count++;
         }
-        
-        return node;
-    }
-    
-    int depthHelper(Node* node) const {
-        if (node == nullptr) {
-            return 0;
+        else if (value < node->data) {
+            insert(node->left, value);
         }
-        
-        int leftDepth = depthHelper(node->left);
-        int rightDepth = depthHelper(node->right);
-        
-        if (leftDepth > rightDepth) {
-            return leftDepth + 1;
-        } else {
-            return rightDepth + 1;
+        else {
+            insert(node->right, value);
         }
     }
     
-    Node* searchHelper(Node* node, const T& value) const {
-        if (node == nullptr || node->data == value) {
-            return node;
-        }
-        
-        if (value < node->data) {
-            return searchHelper(node->left, value);
-        } else {
-            return searchHelper(node->right, value);
-        }
+    int getDepth(Node* node) const {
+        if (node == nullptr) return 0;
+        int left = getDepth(node->left);
+        int right = getDepth(node->right);
+        return (left > right ? left : right) + 1;
     }
     
-    void clearHelper(Node* node) {
+    bool searchNode(Node* node, const T& value) const {
+        if (node == nullptr) return false;
+        if (value == node->data) return true;
+        if (value < node->data) return searchNode(node->left, value);
+        return searchNode(node->right, value);
+    }
+    
+    void collectNodes(Node* node, std::vector<std::pair<T, int>>& vec) const {
         if (node == nullptr) return;
-        
-        clearHelper(node->left);
-        clearHelper(node->right);
+        collectNodes(node->left, vec);
+        vec.push_back({node->data, node->count});
+        collectNodes(node->right, vec);
+    }
+    
+    void clearTree(Node* node) {
+        if (node == nullptr) return;
+        clearTree(node->left);
+        clearTree(node->right);
         delete node;
-    }
-    
-    void collectNodes(Node* node, std::vector<std::pair<T, int>>& nodes) const {
-        if (node == nullptr) return;
-        
-        collectNodes(node->left, nodes);
-        nodes.push_back(std::make_pair(node->data, node->count));
-        collectNodes(node->right, nodes);
     }
     
 public:
     BST() : root(nullptr) {}
     
     ~BST() {
-        clearHelper(root);
+        clearTree(root);
     }
     
     void insert(const T& value) {
-        root = insert(root, value);
+        insert(root, value);
     }
     
     bool search(const T& value) const {
-        return searchHelper(root, value) != nullptr;
+        return searchNode(root, value);
     }
     
     int depth() const {
-        return depth(root) - 1;
+        return getDepth(root);
     }
     
     void getAllNodes(std::vector<std::pair<T, int>>& nodes) const {
