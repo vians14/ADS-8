@@ -22,72 +22,53 @@ private:
     Node* root;
     
     void insert(Node*& node, const T& value) {
-        if (node == nullptr) {
+        if (!node) {
             node = new Node(value);
             return;
         }
-        
         if (value < node->data) {
             insert(node->left, value);
-        }
-        else if (value > node->data) {
+        } else if (node->data < value) {
             insert(node->right, value);
-        }
-        else {
+        } else {
             node->count++;
         }
     }
     
     int getDepth(Node* node) const {
-        if (node == nullptr) return 0;
-        int left = getDepth(node->left);
-        int right = getDepth(node->right);
-        return 1 + (left > right ? left : right);
+        if (!node) return 0;
+        return 1 + std::max(getDepth(node->left), getDepth(node->right));
     }
     
-    bool searchNode(Node* node, const T& value) const {
-        if (node == nullptr) return false;
-        if (value == node->data) return true;
-        if (value < node->data) return searchNode(node->left, value);
-        return searchNode(node->right, value);
+    bool find(Node* node, const T& value) const {
+        if (!node) return false;
+        if (value < node->data) return find(node->left, value);
+        if (node->data < value) return find(node->right, value);
+        return true;
     }
     
-    void collectNodes(Node* node, std::vector<std::pair<T, int>>& vec) const {
-        if (node == nullptr) return;
-        collectNodes(node->left, vec);
-        vec.push_back({node->data, node->count});
-        collectNodes(node->right, vec);
+    void collect(Node* node, std::vector<std::pair<T, int>>& out) const {
+        if (!node) return;
+        collect(node->left, out);
+        out.push_back({node->data, node->count});
+        collect(node->right, out);
     }
     
-    void clearTree(Node* node) {
-        if (node == nullptr) return;
-        clearTree(node->left);
-        clearTree(node->right);
+    void clear(Node* node) {
+        if (!node) return;
+        clear(node->left);
+        clear(node->right);
         delete node;
     }
     
 public:
     BST() : root(nullptr) {}
+    ~BST() { clear(root); }
     
-    ~BST() {
-        clearTree(root);
-    }
-    
-    void insert(const T& value) {
-        insert(root, value);
-    }
-    
-    bool search(const T& value) const {
-        return searchNode(root, value);
-    }
-    
-    int depth() const {
-        return getDepth(root) - 1;
-    }
-    
-    void getAllNodes(std::vector<std::pair<T, int>>& nodes) const {
-        collectNodes(root, nodes);
-    }
+    void insert(const T& value) { insert(root, value); }
+    bool search(const T& value) const { return find(root, value); }
+    int depth() const { return getDepth(root) - 1; }
+    void getAllNodes(std::vector<std::pair<T, int>>& out) const { collect(root, out); }
 };
 
 #endif
