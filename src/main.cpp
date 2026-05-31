@@ -1,3 +1,4 @@
+// Copyright 2025 NNTU-CS
 #include <iostream>
 #include <string>
 #include "bst.h"
