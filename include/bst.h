@@ -41,8 +41,18 @@ private:
     }
     
     int depthHelper(Node* node) const {
-        if (node == nullptr) return 0;
-        return 1 + std::max(depthHelper(node->left), depthHelper(node->right));
+        if (node == nullptr) {
+            return 0;
+        }
+        
+        int leftDepth = depthHelper(node->left);
+        int rightDepth = depthHelper(node->right);
+        
+        if (leftDepth > rightDepth) {
+            return leftDepth + 1;
+        } else {
+            return rightDepth + 1;
+        }
     }
     
     Node* searchHelper(Node* node, const T& value) const {
