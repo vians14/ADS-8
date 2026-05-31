@@ -9,6 +9,7 @@
 #include <vector>
 #include <algorithm>
 #include <set>
+#include <sstream>
 
 void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
