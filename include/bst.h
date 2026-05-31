@@ -1,3 +1,4 @@
+// Copyright 2025 NNTU-CS
 #ifndef INCLUDE_BST_H_
 #define INCLUDE_BST_H_
 
