@@ -5,13 +5,15 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <vector>
+#include <utility>
 
 template<typename T>
 class BST {
 private:
     struct Node {
         T data;
-        int count;        
+        int count;
         Node* left;
         Node* right;
         
@@ -20,7 +22,6 @@ private:
     
     Node* root;
     
-
     Node* insert(Node* node, const T& value) {
         if (node == nullptr) {
             return new Node(value);
@@ -33,22 +34,17 @@ private:
             node->right = insert(node->right, value);
         } 
         else {
-           node->count++;
+            node->count++;
         }
         
         return node;
     }
     
-
     int depthHelper(Node* node) const {
         if (node == nullptr) return 0;
-        
-        int leftDepth = depthHelper(node->left);
-        int rightDepth = depthHelper(node->right);
-        
-        return 1 + std::max(leftDepth, rightDepth);
+        return 1 + std::max(depthHelper(node->left), depthHelper(node->right));
     }
-  
+    
     Node* searchHelper(Node* node, const T& value) const {
         if (node == nullptr || node->data == value) {
             return node;
@@ -61,7 +57,6 @@ private:
         }
     }
     
-    
     void clearHelper(Node* node) {
         if (node == nullptr) return;
         
@@ -70,12 +65,11 @@ private:
         delete node;
     }
     
-
     void collectNodes(Node* node, std::vector<std::pair<T, int>>& nodes) const {
         if (node == nullptr) return;
         
         collectNodes(node->left, nodes);
-        nodes.push_back({node->data, node->count});
+        nodes.push_back(std::make_pair(node->data, node->count));
         collectNodes(node->right, nodes);
     }
     
@@ -86,7 +80,6 @@ public:
         clearHelper(root);
     }
     
-  
     void insert(const T& value) {
         root = insert(root, value);
     }
@@ -95,13 +88,8 @@ public:
         return searchHelper(root, value) != nullptr;
     }
     
-
     int depth() const {
         return depthHelper(root);
-    }
-    
-    Node* getRoot() const {
-        return root;
     }
     
     void getAllNodes(std::vector<std::pair<T, int>>& nodes) const {
@@ -109,5 +97,4 @@ public:
     }
 };
 
-
-#endif  // INCLUDE_BST_H_
+#endif
