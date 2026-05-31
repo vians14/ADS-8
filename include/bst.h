@@ -9,7 +9,7 @@
 
 template<typename T>
 class BST {
-private:
+public:
     struct Node {
         T data;
         int count;
@@ -17,7 +17,8 @@ private:
         Node* right;
         Node(const T& val) : data(val), count(1), left(nullptr), right(nullptr) {}
     };
-    
+
+private:
     Node* root;
     
     void insert(Node*& node, const T& value) {
