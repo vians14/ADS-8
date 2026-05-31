@@ -11,30 +11,28 @@
 
 void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
-    
-    if (!file.is_open()) {
-        std::cerr << "Error: cannot open file" << std::endl;
-        return;
-    }
+    if (!file) return;
     
     std::string word;
     char c;
     
     while (file.get(c)) {
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        // только латинские буквы A-Z a-z
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            // приводим к нижнему регистру
             if (c >= 'A' && c <= 'Z') {
-                c = c + 32;
+                c = c + ('a' - 'A');
             }
-            word.push_back(c);
+            word += c;
         } else {
-            if (word.length() > 0) {
+            if (!word.empty()) {
                 tree.insert(word);
                 word.clear();
             }
         }
     }
     
-    if (word.length() > 0) {
+    if (!word.empty()) {
         tree.insert(word);
     }
     
@@ -47,17 +45,14 @@ void printFreq(BST<std::string>& tree) {
     
     std::sort(nodes.begin(), nodes.end(),
         [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-            if (a.second != b.second) {
-                return a.second > b.second;
-            }
+            if (a.second != b.second) return a.second > b.second;
             return a.first < b.first;
         });
     
-    std::ofstream outFile("result/freq.txt");
-    
-    for (const auto& node : nodes) {
-        outFile << node.first << " " << node.second << std::endl;
+    std::ofstream out("result/freq.txt");
+    for (const auto& p : nodes) {
+        out << p.first << " " << p.second << "\n";
+        std::cout << p.first << " " << p.second << "\n";
     }
-    
-    outFile.close();
+    out.close();
 }
