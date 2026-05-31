@@ -10,42 +10,33 @@
 #include <algorithm>
 #include <set>
 
-bool isLatinLetter(char ch) {
-    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
-}
-
-char toLowerCase(char ch) {
-    if (ch >= 'A' && ch <= 'Z') {
-        return ch + ('a' - 'A');
-    }
-    return ch;
-}
-
 void makeTree(BST<std::string>& tree, const char* filename) {
     std::ifstream file(filename);
     
-    if (!file) {
-        std::cerr << "File error!" << std::endl;
+    if (!file.is_open()) {
+        std::cerr << "Error: cannot open " << filename << std::endl;
         return;
     }
     
-    std::string currentWord;
+    std::string word;
     char ch;
     
     while (file.get(ch)) {
-        if (isLatinLetter(ch)) {
-            currentWord += toLowerCase(ch);
-        } 
-        else {
-            if (!currentWord.empty()) {
-                tree.insert(currentWord);
-                currentWord.clear();
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+            if (ch >= 'A' && ch <= 'Z') {
+                ch = ch + 32;
+            }
+            word += ch;
+        } else {
+            if (word.length() > 0) {
+                tree.insert(word);
+                word.clear();
             }
         }
     }
     
-    if (!currentWord.empty()) {
-        tree.insert(currentWord);
+    if (word.length() > 0) {
+        tree.insert(word);
     }
     
     file.close();
@@ -64,10 +55,6 @@ void printFreq(BST<std::string>& tree) {
         });
     
     std::ofstream outFile("result/freq.txt");
-    if (!outFile) {
-        std::cerr << "File error!" << std::endl;
-        return;
-    }
     
     for (const auto& node : nodes) {
         outFile << node.first << " " << node.second << std::endl;
