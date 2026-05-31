@@ -99,7 +99,7 @@ public:
     }
     
     int depth() const {
-        return depthHelper(root);
+        return depth(root) - 1;
     }
     
     void getAllNodes(std::vector<std::pair<T, int>>& nodes) const {
