@@ -27,14 +27,14 @@ private:
             return;
         }
         
-        if (value == node->data) {
-            node->count++;
-        }
-        else if (value < node->data) {
+        if (value < node->data) {
             insert(node->left, value);
         }
-        else {
+        else if (value > node->data) {
             insert(node->right, value);
+        }
+        else {
+            node->count++;
         }
     }
     
@@ -42,7 +42,7 @@ private:
         if (node == nullptr) return 0;
         int left = getDepth(node->left);
         int right = getDepth(node->right);
-        return (left > right ? left : right) + 1;
+        return 1 + (left > right ? left : right);
     }
     
     bool searchNode(Node* node, const T& value) const {
@@ -82,7 +82,7 @@ public:
     }
     
     int depth() const {
-        return getDepth(root);
+        return getDepth(root) - 1;
     }
     
     void getAllNodes(std::vector<std::pair<T, int>>& nodes) const {
