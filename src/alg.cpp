@@ -14,47 +14,48 @@ void makeTree(BST<std::string>& tree, const char* filename) {
     if (!file) return;
     
     std::string word;
-    char c;
+    int ch;
     
-    while (file.get(c)) {
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-            if (c >= 'A' && c <= 'Z') c = c + 32;
-            word += c;
-        } else if (!word.empty()) {
-            while (!word.empty() && !((word.back() >= 'a' && word.back() <= 'z'))) {
-                word.pop_back();
-            }
+    while ((ch = file.get()) != EOF) {
+        if (std::isalpha(static_cast<unsigned char>(ch))) {
+            word += std::tolower(static_cast<unsigned char>(ch));
+        } else {
             if (!word.empty()) {
                 tree.insert(word);
+                word.clear();
             }
-            word.clear();
         }
     }
     
     if (!word.empty()) {
-        while (!word.empty() && !((word.back() >= 'a' && word.back() <= 'z'))) {
-            word.pop_back();
-        }
-        if (!word.empty()) {
-            tree.insert(word);
-        }
+        tree.insert(word);
     }
     
     file.close();
 }
 
+namespace {
+struct PairVec {
+    std::vector<std::pair<std::string, int>> data;
+};
+
+void collectInorder(BST<std::string>::Node* node, PairVec& pv) {
+    if (!node) return;
+    collectInorder(node->left, pv);
+    pv.data.push_back({node->data, node->count});
+    collectInorder(node->right, pv);
+}
+}
+
 void printFreq(BST<std::string>& tree) {
-    std::vector<std::pair<std::string, int>> nodes;
-    tree.getAllNodes(nodes);
+    PairVec pv;
+    collectInorder(tree.getRoot(), pv);
     
-    std::sort(nodes.begin(), nodes.end(),
-        [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-            if (a.second != b.second) return a.second > b.second;
-            return a.first < b.first;
-        });
+    std::sort(pv.data.begin(), pv.data.end(),
+        [](const auto& a, const auto& b) { return a.second > b.second; });
     
     std::ofstream out("result/freq.txt");
-    for (const auto& p : nodes) {
+    for (const auto& p : pv.data) {
         out << p.first << " " << p.second << std::endl;
     }
     out.close();
