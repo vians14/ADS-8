@@ -9,7 +9,7 @@ void printFreq(BST<std::string>& tree);
 int main() {
   BST<std::string> tree;
   makeTree(tree, "src/war_peace.txt");
-  std::cout << tree.depth() << std::endl;
+  std::cout << tree.depth() << "\n";
   printFreq(tree);
   return 0;
 }
